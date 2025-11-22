@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 import {
     Package,
@@ -235,9 +236,12 @@ export default function DashboardPage() {
                                 <TrendingUp className="h-6 w-6" />
                                 <span>Stock Receipt</span>
                             </Button>
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <TrendingDown className="h-6 w-6" />
-                                <span>Stock Delivery</span>
+
+                            <Button variant="outline" className="h-24 flex-col gap-2" asChild>
+                                <Link href="/dashboard/deliveries">
+                                    <TrendingDown className="h-6 w-6" />
+                                    <span>Stock Delivery</span>
+                                </Link>
                             </Button>
                             <Button variant="outline" className="h-24 flex-col gap-2">
                                 <Package className="h-6 w-6" />
