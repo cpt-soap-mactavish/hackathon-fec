@@ -232,9 +232,11 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4 md:grid-cols-3">
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <TrendingUp className="h-6 w-6" />
-                                <span>Stock Receipt</span>
+                            <Button variant="outline" className="h-24 flex-col gap-2" asChild>
+                                <Link href="/dashboard/receipts">
+                                    <TrendingUp className="h-6 w-6" />
+                                    <span>Stock Receipt</span>
+                                </Link>
                             </Button>
 
                             <Button variant="outline" className="h-24 flex-col gap-2" asChild>

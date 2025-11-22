@@ -87,6 +87,7 @@ model Transaction {
   status      TransactionStatus @default(DRAFT)
   reference   String?
   customer    String?
+  responsible String?
   notes       String?
   date        DateTime          @default(now())
   items       TransactionItem[]
