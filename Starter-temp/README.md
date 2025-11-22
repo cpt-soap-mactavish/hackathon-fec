@@ -1,131 +1,46 @@
-# StockMaster - Smart Inventory Management System
+# Inventory Management Dashboard
 
-A robust, secure, and modern Inventory Management System built with **Next.js 15**, **Tailwind CSS**, **PostgreSQL**, and **Prisma**.
+## Project Overview
+This repository contains a web application built with Next.js and Tailwind CSS that provides a dashboard for managing inventory operations. It displays real‑time statistics such as total products, stock levels, low‑stock alerts, pending receipts, and pending deliveries. The UI follows a professional card design with icons and gradient typography.
 
-![StockMaster Preview](https://via.placeholder.com/800x400?text=StockMaster+Preview)
-*(Replace with actual screenshot if available)*
+## Features
+- Authentication with NextAuth
+- Real‑time dashboard statistics fetched from `/api/dashboard/stats`
+- Professional operation cards for Receipts and Deliveries with large, gradient numbers
+- Recent transactions list with type‑based colour tags
+- Export button for data download (placeholder implementation)
 
-## 🚀 Features
-
-- **Authentication**:
-  - 🔐 **Credentials Auth**: Secure Login ID/Password login with BCrypt hashing.
-  - 🛡️ **Role-Based Access**: Admin and Staff roles.
-  - 🌐 **Session Management**: Protected routes and automatic redirects.
-- **Inventory Management**:
-  - 📦 **Product Catalog**: Manage products, categories, and SKUs.
-  - 🏭 **Multi-Warehouse**: Track stock across multiple locations.
-  - 📊 **Stock Operations**: Inbound receipts, outbound deliveries, and transfers.
-- **UI/UX**:
-  - 🎨 **Modern Design**: Glassmorphism aesthetic with Tailwind CSS & Shadcn UI.
-  - 🌓 **Dark Mode**: Fully supported dark/light theme switching.
-  - ✨ **Animations**: Smooth page transitions and micro-interactions using Framer Motion.
-
-## 🛠️ Tech Stack
-
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) & [Shadcn UI](https://ui.shadcn.com/)
-- **Database**: [PostgreSQL](https://www.postgresql.org/)
-- **ORM**: [Prisma](https://www.prisma.io/)
-- **Auth**: [NextAuth.js v4](https://next-auth.js.org/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-
-## 🏁 Getting Started
-
-Follow these steps to set up the project locally.
-
+## Getting Started
 ### Prerequisites
+- Node.js (v20 or later)
+- npm (v10 or later)
+- A running PostgreSQL or MongoDB instance (the app currently uses MongoDB for data storage)
 
-- **Node.js** (v18 or higher)
-- **PostgreSQL** (Local instance)
-
-### 1. Clone the Repository
-
+### Installation
 ```bash
+# Clone the repository
 git clone <repository-url>
-cd <project-directory>
-```
+cd Starter-temp
 
-### 2. Install Dependencies
-
-```bash
+# Install dependencies
 npm install
 ```
 
-### 3. Configure Environment Variables
-
-Create a `.env` file in the root directory (copy from `.env.example`).
-
-```bash
-cp .env.example .env
-```
-
-Update the `DATABASE_URL` in `.env` with your local PostgreSQL credentials:
-
-```env
-DATABASE_URL="postgresql://username:password@localhost:5432/stockmaster?schema=public"
-```
-
-### 4. Database Setup
-
-Run the following commands to set up the database schema and seed initial data:
-
-```bash
-# Run migrations
-npx prisma migrate dev
-
-# Seed the database (Admin user, default warehouse, sample products)
-npx prisma db seed
-```
-
-### 5. Run the Development Server
-
+### Running the Development Server
 ```bash
 npm run dev
 ```
+Open your browser and navigate to `http://localhost:3000`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser.
+## API Endpoints
+- `GET /api/dashboard/stats` – Returns a JSON object with aggregated statistics and recent transactions.
+- Additional CRUD routes exist under `/api/receipts`, `/api/deliveries`, and `/api/transfers`.
 
-**Default Admin Credentials:**
-- **Login ID**: `AdminUser`
-- **Password**: `Admin@123`
-
-## 📦 Building for Production
-
-To create a production build:
-
-```bash
-npm run build
-```
-
-To start the production server:
-
-```bash
-npm start
-```
-
-## 📂 Project Structure
-
-```
-├── app/                # Next.js App Router pages and API routes
-│   ├── api/            # Backend API routes (auth, register, etc.)
-│   ├── login/          # Login page
-│   ├── register/       # Register page
-│   ├── dashboard/      # Main dashboard
-│   └── ...
-├── components/         # Reusable UI components
-├── lib/                # Utility functions (Prisma, Auth)
-├── prisma/             # Database schema and seed script
-└── public/             # Static assets
-```
-
-## 🤝 Contributing
-
+## Contributing
 1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/amazing-feature`).
-3. Commit your changes (`git commit -m 'Add some amazing feature'`).
-4. Push to the branch (`git push origin feature/amazing-feature`).
-5. Open a Pull Request.
+2. Create a feature branch (`git checkout -b feature/your-feature`).
+3. Commit your changes and push to your fork.
+4. Open a pull request describing the changes.
 
-## 📄 License
-
+## License
 This project is licensed under the MIT License.

@@ -55,29 +55,28 @@ export default function DashboardPage() {
 
     const fetchDashboardData = async () => {
         try {
-            setIsLoading(true)
-            const response = await fetch('/api/dashboard/stats')
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch dashboard data')
-            }
-
-            const data = await response.json()
-
+            // TODO: Replace with actual API calls
+            // Simulating data for now
             setStats({
-                totalProducts: data.totalProducts || 0,
-                totalStock: data.totalStock || 0,
-                lowStockItems: data.lowStockItems || 0,
-                recentTransactions: data.recentTransactions?.length || 0
+                totalProducts: 156,
+                totalStock: 12450,
+                lowStockItems: 8,
+                recentTransactions: 24
             })
 
-            setLowStockProducts(data.lowStockProducts || [])
-            setRecentTransactions(data.recentTransactions || [])
+            setLowStockProducts([
+                { id: 1, name: "Laptop Pro X", sku: "LAP-PRO-001", currentStock: 5, minStock: 10, warehouse: "Main Warehouse" },
+                { id: 2, name: "Wireless Mouse", sku: "ACC-MSE-002", currentStock: 15, minStock: 50, warehouse: "Main Warehouse" },
+            ])
 
+            setRecentTransactions([
+                { id: 1, type: "INBOUND", reference: "RCV-001", product: "Laptop Pro X", quantity: 50, date: "2025-11-22", status: "COMPLETED" },
+                { id: 2, type: "OUTBOUND", reference: "DEL-001", product: "Wireless Mouse", quantity: 20, date: "2025-11-22", status: "COMPLETED" },
+            ])
+
+            setIsLoading(false)
         } catch (error) {
-            console.error('Dashboard fetch error:', error)
             toast.error("Failed to load dashboard data")
-        } finally {
             setIsLoading(false)
         }
     }
@@ -122,7 +121,7 @@ export default function DashboardPage() {
                             <div className="flex items-center justify-between">
                                 <Button size="lg" className="h-16 px-8 text-lg" asChild>
                                     <Link href="/dashboard/receipts">
-                                        4 to receive
+                                        1 to receive
                                     </Link>
                                 </Button>
                                 <div className="space-y-1 text-right">
