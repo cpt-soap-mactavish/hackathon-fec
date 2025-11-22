@@ -51,6 +51,7 @@ export async function POST(request) {
             productId: item.productId,
             quantity: parseInt(item.quantity),
             fromWarehouseId: item.warehouseId, // Source warehouse
+            fromLocationId: item.fromLocationId || null,
           })),
         },
       },

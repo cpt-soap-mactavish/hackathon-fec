@@ -43,6 +43,7 @@ export default function CreateDeliveryPage() {
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
     const [warehouses, setWarehouses] = useState([]);
+    const [locations, setLocations] = useState([]);
     const [currentStatus, setCurrentStatus] = useState("DRAFT"); // DRAFT, WAITING, READY, DONE
 
     const [formData, setFormData] = useState({
@@ -53,7 +54,7 @@ export default function CreateDeliveryPage() {
         operationType: "Delivery Orders",
         sourceWarehouseId: "",
         items: [
-            { productId: "", warehouseId: "", quantity: 1 }
+            { productId: "", warehouseId: "", fromLocationId: "null", quantity: 1 }
         ]
     });
 
@@ -69,26 +70,35 @@ export default function CreateDeliveryPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [productsRes, warehousesRes] = await Promise.all([
+                const [productsRes, warehousesRes, locationsRes] = await Promise.all([
                     fetch("/api/products"),
-                    fetch("/api/warehouses")
+                    fetch("/api/warehouses"),
+                    fetch("/api/locations")
                 ]);
 
                 if (productsRes.ok) {
                     const productsData = await productsRes.json();
                     setProducts(productsData);
                 }
+
+                let warehousesData = [];
                 if (warehousesRes.ok) {
-                    const warehousesData = await warehousesRes.json();
+                    warehousesData = await warehousesRes.json();
                     setWarehouses(warehousesData);
-                    // Set default warehouse for new items if available
-                    if (warehousesData.length > 0) {
-                        setFormData(prev => ({
-                            ...prev,
-                            sourceWarehouseId: warehousesData[0].id,
-                            items: prev.items.map(item => ({ ...item, warehouseId: warehousesData[0].id }))
-                        }));
-                    }
+                }
+
+                if (locationsRes.ok) {
+                    const locationsData = await locationsRes.json();
+                    setLocations(locationsData);
+                }
+
+                // Set default warehouse for new items if available
+                if (warehousesData.length > 0) {
+                    setFormData(prev => ({
+                        ...prev,
+                        sourceWarehouseId: warehousesData[0].id,
+                        items: prev.items.map(item => ({ ...item, warehouseId: warehousesData[0].id }))
+                    }));
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -101,7 +111,7 @@ export default function CreateDeliveryPage() {
     const handleAddItem = () => {
         setFormData({
             ...formData,
-            items: [...formData.items, { productId: "", warehouseId: formData.sourceWarehouseId || warehouses[0]?.id || "", quantity: 1 }]
+            items: [...formData.items, { productId: "", warehouseId: formData.sourceWarehouseId || warehouses[0]?.id || "", fromLocationId: "null", quantity: 1 }]
         });
     };
 
@@ -125,6 +135,10 @@ export default function CreateDeliveryPage() {
         return available >= quantity;
     };
 
+    const getWarehouseLocations = (warehouseId) => {
+        return locations.filter(l => l.warehouseId === warehouseId);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -133,7 +147,13 @@ export default function CreateDeliveryPage() {
             const res = await fetch("/api/deliveries", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    items: formData.items.map(item => ({
+                        ...item,
+                        fromLocationId: item.fromLocationId === "null" ? null : item.fromLocationId
+                    }))
+                }),
             });
 
             if (!res.ok) throw new Error("Failed to create delivery");
@@ -310,7 +330,8 @@ export default function CreateDeliveryPage() {
                                     <TableRow className="hover:bg-transparent border-border/50">
                                         <TableHead className="w-[40%]">Product</TableHead>
                                         <TableHead className="w-[30%]">From</TableHead>
-                                        <TableHead className="w-[20%]">Quantity</TableHead>
+                                        <TableHead className="w-[20%]">Location</TableHead>
+                                        <TableHead className="w-[10%]">Quantity</TableHead>
                                         <TableHead className="w-[10%]"></TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -355,6 +376,23 @@ export default function CreateDeliveryPage() {
                                                                 <SelectItem key={w.id} value={w.id}>
                                                                     {w.name}
                                                                 </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Select
+                                                        value={item.fromLocationId}
+                                                        onValueChange={(val) => handleItemChange(index, "fromLocationId", val)}
+                                                        disabled={!item.warehouseId}
+                                                    >
+                                                        <SelectTrigger className="border-0 bg-transparent focus:ring-0 p-0 h-auto">
+                                                            <SelectValue placeholder="Select Location" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="null">-- Default --</SelectItem>
+                                                            {getWarehouseLocations(item.warehouseId).map((l) => (
+                                                                <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
                                                             ))}
                                                         </SelectContent>
                                                     </Select>

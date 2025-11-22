@@ -12,6 +12,7 @@ export async function GET(request, { params }) {
                     include: {
                         product: true,
                         fromWarehouse: true,
+                        fromLocation: true,
                     },
                 },
             },
@@ -56,9 +57,10 @@ export async function PUT(request, { params }) {
             for (const item of currentTransaction.items) {
                 const stock = await prisma.stock.findUnique({
                     where: {
-                        productId_warehouseId: {
+                        productId_warehouseId_locationId: {
                             productId: item.productId,
                             warehouseId: item.fromWarehouseId,
+                            locationId: item.fromLocationId || null,
                         },
                     },
                 });
@@ -79,9 +81,10 @@ export async function PUT(request, { params }) {
                 for (const item of currentTransaction.items) {
                     await tx.stock.update({
                         where: {
-                            productId_warehouseId: {
+                            productId_warehouseId_locationId: {
                                 productId: item.productId,
                                 warehouseId: item.fromWarehouseId,
+                                locationId: item.fromLocationId || null,
                             },
                         },
                         data: {

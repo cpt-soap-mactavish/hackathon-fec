@@ -51,10 +51,29 @@ enum TransactionStatus {
 model Warehouse {
   id        String   @id @default(cuid())
   name      String   @unique
+  shortCode String?
   location  String?
   stocks    Stock[]
   transactionItemsFrom TransactionItem[] @relation("TransactionItemFrom")
   transactionItemsTo   TransactionItem[] @relation("TransactionItemTo")
+  locations            Location[]
+}
+
+model Location {
+  id          String    @id @default(cuid())
+  name        String
+  shortCode   String?
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  stocks      Stock[]
+  
+  transactionItemsFrom TransactionItem[] @relation("TransactionItemFromLocation")
+  transactionItemsTo   TransactionItem[] @relation("TransactionItemToLocation")
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([name, warehouseId])
 }
 
 model Product {
@@ -77,8 +96,10 @@ model Stock {
   quantity    Int       @default(0)
   product     Product   @relation(fields: [productId], references: [id])
   warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  locationId  String?
+  location    Location? @relation(fields: [locationId], references: [id])
 
-  @@unique([productId, warehouseId])
+  @@unique([productId, warehouseId, locationId])
 }
 
 model Transaction {
@@ -110,4 +131,10 @@ model TransactionItem {
   
   toWarehouseId   String?
   toWarehouse     Warehouse? @relation("TransactionItemTo", fields: [toWarehouseId], references: [id])
+
+  fromLocationId String?
+  fromLocation   Location? @relation("TransactionItemFromLocation", fields: [fromLocationId], references: [id])
+
+  toLocationId   String?
+  toLocation     Location? @relation("TransactionItemToLocation", fields: [toLocationId], references: [id])
 }

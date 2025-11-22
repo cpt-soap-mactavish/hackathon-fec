@@ -94,186 +94,92 @@ export default function DashboardPage() {
 
     return (
         <PageWrapper className="min-h-screen bg-background p-6">
-            <div className="max-w-7xl mx-auto space-y-6">
+            <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-                        <p className="text-muted-foreground">Welcome back, {session?.user?.name || session?.user?.username}</p>
+                        <p className="text-muted-foreground">Overview of your inventory operations</p>
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" size="sm">
                             <Download className="h-4 w-4 mr-2" />
                             Export
                         </Button>
-                        <Button size="sm">
-                            <Plus className="h-4 w-4 mr-2" />
-                            New Transaction
-                        </Button>
                     </div>
                 </div>
 
-                {/* Quick Actions */}
-                <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                    <CardHeader>
-                        <CardTitle>Quick Actions</CardTitle>
-                        <CardDescription>Common inventory operations</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-4 md:grid-cols-3">
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <TrendingUp className="h-6 w-6" />
-                                <span>Stock Receipt</span>
-                            </Button>
-
-                            <Button variant="outline" className="h-24 flex-col gap-2" asChild>
-                                <Link href="/dashboard/deliveries">
-                                    <TrendingDown className="h-6 w-6" />
-                                    <span>Stock Delivery</span>
-                                </Link>
-                            </Button>
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <Package className="h-6 w-6" />
-                                <span>Stock Transfer</span>
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Stats Cards */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-                            <Package className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.totalProducts}</div>
-                            <p className="text-xs text-muted-foreground">Active SKUs</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Stock</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-green-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.totalStock.toLocaleString()}</div>
-                            <p className="text-xs text-muted-foreground">Units in inventory</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-destructive/20 bg-card/50 backdrop-blur">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
-                            <AlertTriangle className="h-4 w-4 text-destructive" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-destructive">{stats.lowStockItems}</div>
-                            <p className="text-xs text-muted-foreground">Items below minimum</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Recent Transactions</CardTitle>
-                            <TrendingDown className="h-4 w-4 text-blue-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.recentTransactions}</div>
-                            <p className="text-xs text-muted-foreground">Last 7 days</p>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Main Content Grid */}
-                <div className="grid gap-6 lg:grid-cols-2">
-                    {/* Low Stock Alerts */}
-                    <Card className="border-primary/20 bg-card/50 backdrop-blur">
+                {/* Operations Cards (Wireframe Layout) */}
+                <div className="grid gap-6 md:grid-cols-2">
+                    {/* Receipt Card */}
+                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-colors">
                         <CardHeader>
-                            <CardTitle>Low Stock Alerts</CardTitle>
-                            <CardDescription>Products below minimum stock level</CardDescription>
+                            <CardTitle className="text-xl text-primary">Receipts</CardTitle>
+                            <CardDescription>Inbound stock operations</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {lowStockProducts.map((product) => (
-                                    <div key={product.id} className="flex items-center justify-between p-3 border border-destructive/20 rounded-lg bg-destructive/5">
-                                        <div className="space-y-1">
-                                            <p className="font-medium">{product.name}</p>
-                                            <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
-                                            <p className="text-xs text-muted-foreground">{product.warehouse}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-medium text-destructive">
-                                                {product.currentStock} / {product.minStock}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground">Current / Min</p>
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="flex items-center justify-between">
+                                <Button size="lg" className="h-16 px-8 text-lg" asChild>
+                                    <Link href="/dashboard/receipts">
+                                        4 to receive
+                                    </Link>
+                                </Button>
+                                <div className="space-y-1 text-right">
+                                    <div className="text-sm font-medium text-destructive">1 Late</div>
+                                    <div className="text-sm text-muted-foreground">6 operations</div>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    {/* Recent Transactions */}
-                    <Card className="border-primary/20 bg-card/50 backdrop-blur">
+                    {/* Delivery Card */}
+                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/50 transition-colors">
                         <CardHeader>
-                            <CardTitle>Recent Transactions</CardTitle>
-                            <CardDescription>Latest stock movements</CardDescription>
+                            <CardTitle className="text-xl text-primary">Deliveries</CardTitle>
+                            <CardDescription>Outbound stock operations</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {recentTransactions.map((transaction) => (
-                                    <div key={transaction.id} className="flex items-center justify-between p-3 border border-border/50 rounded-lg">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`px-2 py-0.5 text-xs rounded-full ${transaction.type === 'INBOUND' ? 'bg-green-500/10 text-green-500' : 'bg-blue-500/10 text-blue-500'
-                                                    }`}>
-                                                    {transaction.type}
-                                                </span>
-                                                <p className="font-medium">{transaction.reference}</p>
-                                            </div>
-                                            <p className="text-sm text-muted-foreground">{transaction.product}</p>
-                                            <p className="text-xs text-muted-foreground">{transaction.date}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-medium">{transaction.quantity} units</p>
-                                            <p className={`text-xs ${transaction.status === 'COMPLETED' ? 'text-green-500' : 'text-yellow-500'
+                            <div className="flex items-center justify-between">
+                                <Button size="lg" className="h-16 px-8 text-lg" asChild>
+                                    <Link href="/dashboard/deliveries">
+                                        4 to Deliver
+                                    </Link>
+                                </Button>
+                                <div className="space-y-1 text-right">
+                                    <div className="text-sm font-medium text-destructive">1 Late</div>
+                                    <div className="text-sm font-medium text-yellow-500">2 waiting</div>
+                                    <div className="text-sm text-muted-foreground">6 operations</div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Recent Transactions (Kept as useful context below the main cards) */}
+                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                    <CardHeader>
+                        <CardTitle>Recent Activity</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            {recentTransactions.map((transaction) => (
+                                <div key={transaction.id} className="flex items-center justify-between p-3 border border-border/50 rounded-lg">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className={`px-2 py-0.5 text-xs rounded-full ${transaction.type === 'INBOUND' ? 'bg-green-500/10 text-green-500' : 'bg-blue-500/10 text-blue-500'
                                                 }`}>
-                                                {transaction.status}
-                                            </p>
+                                                {transaction.type}
+                                            </span>
+                                            <p className="font-medium">{transaction.reference}</p>
                                         </div>
+                                        <p className="text-sm text-muted-foreground">{transaction.product}</p>
                                     </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Quick Actions */}
-                <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                    <CardHeader>
-                        <CardTitle>Quick Actions</CardTitle>
-                        <CardDescription>Common inventory operations</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-4 md:grid-cols-3">
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <TrendingUp className="h-6 w-6" />
-                                <span>Stock Receipt</span>
-                            </Button>
-
-                            <Button variant="outline" className="h-24 flex-col gap-2" asChild>
-                                <Link href="/dashboard/deliveries">
-                                    <TrendingDown className="h-6 w-6" />
-                                    <span>Stock Delivery</span>
-                                </Link>
-                            </Button>
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <Package className="h-6 w-6" />
-                                <span>Stock Transfer</span>
-                            </Button>
+                                    <div className="text-right">
+                                        <p className="text-sm font-medium">{transaction.quantity} units</p>
+                                        <p className="text-xs text-muted-foreground">{transaction.date}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </CardContent>
                 </Card>

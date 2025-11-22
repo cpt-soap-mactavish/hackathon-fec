@@ -56,9 +56,45 @@ export function Navbar() {
                     <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">
                         Dashboard
                     </Link>
-                    <Link href="/dashboard/deliveries" className="transition-colors hover:text-foreground/80 text-foreground/60">
-                        Deliveries
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 outline-none">
+                            Operations
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                            <DropdownMenuItem asChild>
+                                <Link href="/dashboard/receipts">Receipts</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/dashboard/deliveries">Deliveries</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/dashboard/adjustments">Adjustments</Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <Link href="/dashboard/products" className="transition-colors hover:text-foreground/80 text-foreground/60">
+                        Stock
                     </Link>
+
+                    <Link href="/dashboard/transfers" className="transition-colors hover:text-foreground/80 text-foreground/60">
+                        Move History
+                    </Link>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className="flex items-center gap-1 transition-colors hover:text-foreground/80 text-foreground/60 outline-none">
+                            Settings
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                            <DropdownMenuItem asChild>
+                                <Link href="/dashboard/warehouses">Warehouses</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/dashboard/locations">Locations</Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
 
                 <div className="flex items-center gap-4">
