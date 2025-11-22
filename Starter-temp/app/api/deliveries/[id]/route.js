@@ -53,14 +53,17 @@ export async function PUT(request, { params }) {
 
         // Check if this is a validation (final step with stock deduction)
         if (status === "DONE" && currentTransaction.status !== "DONE") {
-            // 1. Validate Stock
+            // 1. Validate Stock Availability
             for (const item of currentTransaction.items) {
+                // Properly handle null locationId
+                const fromLocationId = item.fromLocationId === "null" || !item.fromLocationId ? null : item.fromLocationId;
+                
                 const stock = await prisma.stock.findUnique({
                     where: {
                         productId_warehouseId_locationId: {
                             productId: item.productId,
                             warehouseId: item.fromWarehouseId,
-                            locationId: item.fromLocationId || null,
+                            locationId: fromLocationId,
                         },
                     },
                 });
@@ -79,12 +82,15 @@ export async function PUT(request, { params }) {
             const result = await prisma.$transaction(async (tx) => {
                 // Deduct stock for each item
                 for (const item of currentTransaction.items) {
+                    // Properly handle null locationId
+                    const fromLocationId = item.fromLocationId === "null" || !item.fromLocationId ? null : item.fromLocationId;
+                    
                     await tx.stock.update({
                         where: {
                             productId_warehouseId_locationId: {
                                 productId: item.productId,
                                 warehouseId: item.fromWarehouseId,
-                                locationId: item.fromLocationId || null,
+                                locationId: fromLocationId,
                             },
                         },
                         data: {

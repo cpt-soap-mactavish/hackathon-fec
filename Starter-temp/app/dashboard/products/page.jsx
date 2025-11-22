@@ -100,7 +100,7 @@ export default function ProductsPage() {
                 </div>
 
                 {/* Products Table */}
-                <div className="rounded-md border border-border/50 bg-card/50 backdrop-blur-sm">
+                <div className="rounded-md bg-card/50 backdrop-blur-sm">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -108,6 +108,8 @@ export default function ProductsPage() {
                                 <TableHead>SKU</TableHead>
                                 <TableHead>Category</TableHead>
                                 <TableHead>UOM</TableHead>
+                                <TableHead className="text-right">Per Unit Cost</TableHead>
+                                <TableHead className="text-right">On Hand</TableHead>
                                 <TableHead className="text-right">Min Stock</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -115,50 +117,74 @@ export default function ProductsPage() {
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-24 text-center">
+                                    <TableCell colSpan={8} className="h-24 text-center">
                                         <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                                     </TableCell>
                                 </TableRow>
                             ) : filteredProducts.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                                    <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                                         No products found.
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                filteredProducts.map((product) => (
-                                    <TableRow key={product.id} className="hover:bg-muted/50">
-                                        <TableCell className="font-medium">
-                                            <div className="flex items-center gap-2">
-                                                <Package className="h-4 w-4 text-muted-foreground" />
-                                                {product.name}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="font-mono text-xs">{product.sku}</TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary">{product.category || "Uncategorized"}</Badge>
-                                        </TableCell>
-                                        <TableCell>{product.uom}</TableCell>
-                                        <TableCell className="text-right">{product.minStock}</TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button variant="ghost" size="icon" asChild>
-                                                    <Link href={`/dashboard/products/${product.id}`}>
-                                                        <Edit className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="text-destructive hover:text-destructive"
-                                                    onClick={() => handleDelete(product.id)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
+                                filteredProducts.map((product) => {
+                                    const isLowStock = product.totalStock < product.minStock;
+                                    return (
+                                        <TableRow key={product.id} className={`hover:bg-muted/50 ${isLowStock ? 'bg-yellow-500/5' : ''}`}>
+                                            <TableCell className="font-medium">
+                                                <div className="flex items-center gap-2">
+                                                    <Package className="h-4 w-4 text-muted-foreground" />
+                                                    {product.name}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="font-mono text-xs">{product.sku}</TableCell>
+                                            <TableCell>
+                                                <Badge variant="secondary">{product.category || "Uncategorized"}</Badge>
+                                            </TableCell>
+                                            <TableCell>{product.uom}</TableCell>
+                                            <TableCell className="text-right">
+                                                {product.unitCost ? `₹${product.unitCost}` : '-'}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <span className={`font-bold ${isLowStock ? 'text-yellow-600' : ''}`}>
+                                                        {product.totalStock || 0}
+                                                    </span>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-6 px-2"
+                                                        onClick={() => {
+                                                            // Quick adjustment - redirect to adjustments page
+                                                            window.location.href = '/dashboard/adjustments/create';
+                                                        }}
+                                                    >
+                                                        <Edit className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right">{product.minStock}</TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button variant="ghost" size="icon" asChild>
+                                                        <Link href={`/dashboard/products/${product.id}`}>
+                                                            <Edit className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="text-destructive hover:text-destructive"
+                                                        onClick={() => handleDelete(product.id)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
                             )}
                         </TableBody>
                     </Table>

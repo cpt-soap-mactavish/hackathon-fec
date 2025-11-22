@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "TechAuth",
-  description: "Next.js Auth UI with ShadCN",
+  title: "IMS - Inventory Management System",
+  description: "Modern Inventory Management System",
 };
 
 export default function RootLayout({ children }) {
@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
         <Provider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="system"
             enableSystem
           >
             {children}

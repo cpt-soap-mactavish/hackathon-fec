@@ -89,8 +89,37 @@ export default function CreateTransferPage() {
         setFormData({ ...formData, items: newItems });
     };
 
+    // Get available stock for a product at specific warehouse/location
+    const getAvailableStock = (productId, warehouseId, locationId) => {
+        const product = products.find(p => p.id === productId);
+        if (!product || !product.stocks) return 0;
+
+        const stock = product.stocks.find(s =>
+            s.warehouseId === warehouseId &&
+            (locationId === "null" ? s.locationId === null : s.locationId === locationId)
+        );
+
+        return stock ? stock.quantity : 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validate stock availability before submission
+        for (const item of formData.items) {
+            const available = getAvailableStock(
+                item.productId,
+                formData.sourceWarehouseId,
+                formData.sourceLocationId
+            );
+
+            if (available < parseInt(item.quantity)) {
+                const product = products.find(p => p.id === item.productId);
+                toast.error(`Insufficient stock for ${product?.name}. Available: ${available}, Required: ${item.quantity}`);
+                return;
+            }
+        }
+
         setLoading(true);
 
         // Validation: Source and Dest cannot be exactly the same
@@ -242,44 +271,57 @@ export default function CreateTransferPage() {
                             <CardTitle>Items to Transfer</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {formData.items.map((item, index) => (
-                                <div key={index} className="flex gap-4 items-end">
-                                    <div className="flex-1 space-y-2">
-                                        <Label>Product</Label>
-                                        <Select
-                                            value={item.productId}
-                                            onValueChange={(val) => handleItemChange(index, "productId", val)}
+                            {formData.items.map((item, index) => {
+                                const availableStock = item.productId && formData.sourceWarehouseId
+                                    ? getAvailableStock(item.productId, formData.sourceWarehouseId, formData.sourceLocationId)
+                                    : 0;
+                                const isInsufficient = availableStock < parseInt(item.quantity || 0);
+
+                                return (
+                                    <div key={index} className="flex gap-4 items-end">
+                                        <div className="flex-1 space-y-2">
+                                            <Label>Product</Label>
+                                            <Select
+                                                value={item.productId}
+                                                onValueChange={(val) => handleItemChange(index, "productId", val)}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select Product" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {products.map((p) => (
+                                                        <SelectItem key={p.id} value={p.id}>{p.name} ({p.sku})</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="w-32 space-y-2">
+                                            <Label>Quantity</Label>
+                                            <Input
+                                                type="number"
+                                                min="1"
+                                                value={item.quantity}
+                                                onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
+                                                className={isInsufficient ? "border-red-500" : ""}
+                                            />
+                                            {item.productId && formData.sourceWarehouseId && (
+                                                <p className={`text-xs ${isInsufficient ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+                                                    Available: {availableStock}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            type="button"
+                                            onClick={() => removeItem(index)}
+                                            disabled={formData.items.length === 1}
                                         >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select Product" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {products.map((p) => (
-                                                    <SelectItem key={p.id} value={p.id}>{p.name} ({p.sku})</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                            <ArrowRight className="h-4 w-4 rotate-45" />
+                                        </Button>
                                     </div>
-                                    <div className="w-32 space-y-2">
-                                        <Label>Quantity</Label>
-                                        <Input
-                                            type="number"
-                                            min="1"
-                                            value={item.quantity}
-                                            onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
-                                        />
-                                    </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        type="button"
-                                        onClick={() => removeItem(index)}
-                                        disabled={formData.items.length === 1}
-                                    >
-                                        <ArrowRight className="h-4 w-4 rotate-45" />
-                                    </Button>
-                                </div>
-                            ))}
+                                );
+                            })}
                             <Button type="button" variant="outline" onClick={addItem} className="mt-2">
                                 <Plus className="mr-2 h-4 w-4" />
                                 Add Item

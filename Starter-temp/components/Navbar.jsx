@@ -1,9 +1,7 @@
-"use client"
-
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Moon, Sun, Terminal, LogOut, User } from "lucide-react"
+import { Moon, Sun, Package, LogOut, User } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useSession, signOut } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -44,10 +42,10 @@ export function Navbar() {
                             transition={{ duration: 0.5 }}
                             className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                         >
-                            <Terminal className="h-5 w-5" />
+                            <Package className="h-5 w-5" />
                         </motion.div>
                         <span className="hidden md:inline-block bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                            TechAuth
+                            IMS
                         </span>
                     </Link>
                 </div>
