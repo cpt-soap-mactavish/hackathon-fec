@@ -42,8 +42,9 @@ enum TransactionType {
 
 enum TransactionStatus {
   DRAFT
-  PENDING
-  COMPLETED
+  WAITING
+  READY
+  DONE
   CANCELLED
 }
 
@@ -52,6 +53,8 @@ model Warehouse {
   name      String   @unique
   location  String?
   stocks    Stock[]
+  transactionItemsFrom TransactionItem[] @relation("TransactionItemFrom")
+  transactionItemsTo   TransactionItem[] @relation("TransactionItemTo")
 }
 
 model Product {
@@ -83,6 +86,7 @@ model Transaction {
   type        TransactionType
   status      TransactionStatus @default(DRAFT)
   reference   String?
+  customer    String?
   notes       String?
   date        DateTime          @default(now())
   items       TransactionItem[]
@@ -102,5 +106,8 @@ model TransactionItem {
   quantity      Int
   
   fromWarehouseId String?
+  fromWarehouse   Warehouse? @relation("TransactionItemFrom", fields: [fromWarehouseId], references: [id])
+  
   toWarehouseId   String?
+  toWarehouse     Warehouse? @relation("TransactionItemTo", fields: [toWarehouseId], references: [id])
 }

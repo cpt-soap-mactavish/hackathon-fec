@@ -52,6 +52,15 @@ export function Navbar() {
                     </Link>
                 </div>
 
+                <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+                    <Link href="/dashboard" className="transition-colors hover:text-foreground/80 text-foreground/60">
+                        Dashboard
+                    </Link>
+                    <Link href="/dashboard/deliveries" className="transition-colors hover:text-foreground/80 text-foreground/60">
+                        Deliveries
+                    </Link>
+                </div>
+
                 <div className="flex items-center gap-4">
                     <Button
                         variant="ghost"
