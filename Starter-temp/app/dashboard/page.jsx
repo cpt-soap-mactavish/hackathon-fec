@@ -13,6 +13,7 @@ import {
     Filter,
     Download
 } from "lucide-react"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -231,17 +232,23 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4 md:grid-cols-3">
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <TrendingUp className="h-6 w-6" />
-                                <span>Stock Receipt</span>
+                            <Button variant="outline" className="h-24 flex-col gap-2" asChild>
+                                <Link href="/dashboard/receipts">
+                                    <TrendingUp className="h-6 w-6" />
+                                    <span>Stock Receipt</span>
+                                </Link>
                             </Button>
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <TrendingDown className="h-6 w-6" />
-                                <span>Stock Delivery</span>
+                            <Button variant="outline" className="h-24 flex-col gap-2" asChild>
+                                <Link href="/dashboard/delivery">
+                                    <TrendingDown className="h-6 w-6" />
+                                    <span>Stock Delivery</span>
+                                </Link>
                             </Button>
-                            <Button variant="outline" className="h-24 flex-col gap-2">
-                                <Package className="h-6 w-6" />
-                                <span>Stock Transfer</span>
+                            <Button variant="outline" className="h-24 flex-col gap-2" asChild>
+                                <Link href="/dashboard/transfers">
+                                    <Package className="h-6 w-6" />
+                                    <span>Stock Transfer</span>
+                                </Link>
                             </Button>
                         </div>
                     </CardContent>

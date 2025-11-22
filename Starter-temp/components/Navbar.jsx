@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Moon, Sun, Terminal, LogOut, User } from "lucide-react"
+import { Moon, Sun, Terminal, LogOut, User, Settings } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useSession, signOut } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -50,6 +50,28 @@ export function Navbar() {
                             TechAuth
                         </span>
                     </Link>
+                    {session && (
+                        <div className="hidden md:flex items-center gap-1 ml-6">
+                            <Button variant={pathname === "/dashboard" ? "secondary" : "ghost"} asChild size="sm">
+                                <Link href="/dashboard">Overview</Link>
+                            </Button>
+                            <Button variant={pathname.startsWith("/dashboard/stock") ? "secondary" : "ghost"} asChild size="sm">
+                                <Link href="/dashboard/stock">Stock</Link>
+                            </Button>
+                            <Button variant={pathname.startsWith("/dashboard/receipts") ? "secondary" : "ghost"} asChild size="sm">
+                                <Link href="/dashboard/receipts">Receipts</Link>
+                            </Button>
+                            <Button variant={pathname.startsWith("/dashboard/delivery") ? "secondary" : "ghost"} asChild size="sm">
+                                <Link href="/dashboard/delivery">Delivery</Link>
+                            </Button>
+                            <Button variant={pathname.startsWith("/dashboard/transfers") ? "secondary" : "ghost"} asChild size="sm">
+                                <Link href="/dashboard/transfers">Transfers</Link>
+                            </Button>
+                            <Button variant={pathname.startsWith("/dashboard/locations") ? "secondary" : "ghost"} asChild size="sm">
+                                <Link href="/dashboard/locations">Locations</Link>
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -113,6 +135,12 @@ export function Navbar() {
                                     <Link href="/profile" className="cursor-pointer">
                                         <User className="mr-2 h-4 w-4" />
                                         <span>Profile</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/dashboard/settings" className="cursor-pointer">
+                                        <Settings className="mr-2 h-4 w-4" />
+                                        <span>Settings</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />

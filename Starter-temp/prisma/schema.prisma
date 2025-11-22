@@ -51,6 +51,10 @@ model Warehouse {
   id        String   @id @default(cuid())
   name      String   @unique
   location  String?
+  type      String   @default("WAREHOUSE") // WAREHOUSE, RACK, BIN
+  parentId  String?
+  parent    Warehouse? @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children  Warehouse[] @relation("LocationHierarchy")
   stocks    Stock[]
 }
 
