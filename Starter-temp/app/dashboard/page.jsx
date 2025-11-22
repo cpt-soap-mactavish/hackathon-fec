@@ -113,6 +113,33 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
+                {/* Quick Actions */}
+                <Card className="border-primary/20 bg-card/50 backdrop-blur">
+                    <CardHeader>
+                        <CardTitle>Quick Actions</CardTitle>
+                        <CardDescription>Common inventory operations</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid gap-4 md:grid-cols-3">
+                            <Button variant="outline" className="h-24 flex-col gap-2">
+                                <TrendingUp className="h-6 w-6" />
+                                <span>Stock Receipt</span>
+                            </Button>
+
+                            <Button variant="outline" className="h-24 flex-col gap-2" asChild>
+                                <Link href="/dashboard/deliveries">
+                                    <TrendingDown className="h-6 w-6" />
+                                    <span>Stock Delivery</span>
+                                </Link>
+                            </Button>
+                            <Button variant="outline" className="h-24 flex-col gap-2">
+                                <Package className="h-6 w-6" />
+                                <span>Stock Transfer</span>
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
                 {/* Stats Cards */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <Card className="border-primary/20 bg-card/50 backdrop-blur">
