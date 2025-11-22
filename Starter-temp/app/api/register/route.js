@@ -1,40 +1,53 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import dbConnect from '@/lib/db';
-import User from '@/models/User';
+import { userService } from '@/lib/user-service';
 import { sendVerificationEmail } from '@/lib/mail';
+import prisma from '@/lib/prisma';
 
 export async function POST(req) {
   try {
-    await dbConnect();
-    const { name, email, password } = await req.json();
+    const { username, email, password, name } = await req.json();
 
-    const existingUser = await User.findOne({ email });
+    // Check if user exists by email OR username
+    // Check if user exists by email OR username
+    const existingUser = await prisma.user.findFirst({
+        where: {
+            OR: [
+                { email: { equals: email, mode: 'insensitive' } },
+                { username: { equals: username, mode: 'insensitive' } }
+            ]
+        }
+    });
+
     if (existingUser) {
-      return NextResponse.json(
-        { message: 'User already exists' },
-        { status: 400 }
-      );
+      if (existingUser.email === email) {
+          return NextResponse.json({ message: 'Email already exists' }, { status: 400 });
+      }
+      return NextResponse.json({ message: 'Login ID already exists' }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      verificationToken,
-      verificationTokenExpiry,
-      isVerified: false,
+    await prisma.user.create({
+      data: {
+        name: name || username,
+        username,
+        email,
+        password: hashedPassword,
+        verificationToken,
+        verificationTokenExpiry,
+        isVerified: false,
+        role: 'STAFF' // Default role
+      }
     });
 
-    await sendVerificationEmail(email, verificationToken);
+    // await sendVerificationEmail(email, verificationToken); // Keep email logic if needed, or comment out for local dev speed
 
     return NextResponse.json(
-      { message: 'User created successfully. Please check your email to verify your account.' },
+      { message: 'User created successfully.' },
       { status: 201 }
     );
   } catch (error) {

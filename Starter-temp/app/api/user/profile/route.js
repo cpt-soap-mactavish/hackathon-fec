@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next";
 import bcrypt from 'bcryptjs';
-import dbConnect from '@/lib/db';
-import User from '@/models/User';
+import { userService } from '@/lib/user-service';
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(req) {
@@ -13,14 +12,21 @@ export async function GET(req) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    await dbConnect();
-    const user = await User.findOne({ email: session.user.email }).select('-password -verificationToken -resetToken');
+    const user = await userService.findUserByEmail(session.user.email);
 
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json(user, { status: 200 });
+    // Manually select fields to return
+    const safeUser = {
+        name: user.name,
+        email: user.email,
+        image: user.image,
+        isVerified: user.isVerified
+    };
+
+    return NextResponse.json(safeUser, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
@@ -34,17 +40,18 @@ export async function PUT(req) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    await dbConnect();
     const { name, image, currentPassword, newPassword } = await req.json();
-    const user = await User.findOne({ email: session.user.email });
+    const user = await userService.findUserByEmail(session.user.email);
 
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
+    const updateData = {};
+
     // Update basic info
-    if (name) user.name = name;
-    if (image !== undefined) user.image = image;
+    if (name) updateData.name = name;
+    if (image !== undefined) updateData.image = image;
 
     // Update password if provided
     if (newPassword) {
@@ -61,12 +68,12 @@ export async function PUT(req) {
         return NextResponse.json({ message: 'Incorrect current password' }, { status: 400 });
       }
 
-      user.password = await bcrypt.hash(newPassword, 10);
+      updateData.password = await bcrypt.hash(newPassword, 10);
     }
 
-    await user.save();
+    const updatedUser = await userService.updateUser({ email: session.user.email }, updateData);
 
-    return NextResponse.json({ message: 'Profile updated successfully', user: { name: user.name, email: user.email, image: user.image } }, { status: 200 });
+    return NextResponse.json({ message: 'Profile updated successfully', user: { name: updatedUser.name, email: updatedUser.email, image: updatedUser.image } }, { status: 200 });
   } catch (error) {
     console.error("Profile update error:", error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });

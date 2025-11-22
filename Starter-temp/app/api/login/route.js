@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import dbConnect from '@/lib/db';
-import User from '@/models/User';
+import { userService } from '@/lib/user-service';
 
 export async function POST(req) {
   try {
-    await dbConnect();
     const { email, password } = await req.json();
 
-    const user = await User.findOne({ email });
+    const user = await userService.findUserByEmail(email);
     if (!user) {
       return NextResponse.json(
         { message: 'Invalid credentials' },

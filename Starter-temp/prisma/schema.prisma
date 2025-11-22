@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String    @id @default(cuid())
+  name                    String
+  username                String    @unique
+  email                   String    @unique
+  image                   String?   @default("")
+  password                String?
+  role                    Role      @default(STAFF)
+  isVerified              Boolean   @default(false)
+  verificationToken       String?
+  verificationTokenExpiry DateTime?
+  resetToken              String?
+  resetTokenExpiry        DateTime?
+  resetOtpAttempts        Int       @default(0)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+enum TransactionType {
+  INBOUND
+  OUTBOUND
+  TRANSFER
+  ADJUSTMENT
+}
+
+enum TransactionStatus {
+  DRAFT
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model Warehouse {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  location  String?
+  stocks    Stock[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  name        String
+  category    String?
+  uom         String
+  minStock    Int      @default(0)
+  stocks      Stock[]
+  transactionItems TransactionItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Stock {
+  id          String    @id @default(cuid())
+  productId   String
+  warehouseId String
+  quantity    Int       @default(0)
+  product     Product   @relation(fields: [productId], references: [id])
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+
+  @@unique([productId, warehouseId])
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  type        TransactionType
+  status      TransactionStatus @default(DRAFT)
+  reference   String?
+  notes       String?
+  date        DateTime          @default(now())
+  items       TransactionItem[]
+  
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model TransactionItem {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id])
+  
+  quantity      Int
+  
+  fromWarehouseId String?
+  toWarehouseId   String?
+}
